@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'drf_yasg',
     'users.apps.UsersConfig',
+    'sales.apps.SalesConfig',
 ]
 
 MIDDLEWARE = [

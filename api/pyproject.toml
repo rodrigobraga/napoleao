@@ -4,4 +4,5 @@ addopts = "-ra -q"
 python_files = ["tests_*.py"]
 testpaths = [
     "users",
+    "sales",
 ]
