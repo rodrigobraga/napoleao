@@ -1,0 +1,10 @@
+**/__pycache__
+*.pyc
+*.pyo
+*.mo
+*.db
+*.log
+.DS_Store
+.git
+.github
+config
