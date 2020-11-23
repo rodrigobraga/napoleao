@@ -14,11 +14,12 @@ class SaleViewSet(viewsets.ModelViewSet):
     queryset = Sale.objects.all()
     serializer_class = SaleSerializer
     lookup_field = "identifier"
+    filterset_fields = ("date", "percentage", "status",)
 
     def get_queryset(self):
         return Sale.objects.filter(reseller=self.request.user)
     
-    @action(detail=True, methods=['get'])
+    @action(detail=False, methods=['get'])
     def accumulated(self, request, identifier=None):
         url = settings.ACCUMULATED_API_BASE_URL
         token = settings.ACCUMULATED_API_TOKEN

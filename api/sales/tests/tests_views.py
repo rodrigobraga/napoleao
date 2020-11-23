@@ -99,8 +99,7 @@ class SaleTests(APITestCase):
             status=200
         )
 
-        sale = baker.make_recipe("sales.sale", reseller=self.user)
-        url = reverse('sales:sale-accumulated', args=[sale.identifier])
+        url = reverse('sales:sale-accumulated')
         data = {"cpf": self.user.cpf}
 
         response = self.client.get(url, data=data, format='json')
@@ -122,8 +121,7 @@ class SaleTests(APITestCase):
             status=200
         )
 
-        sale = baker.make_recipe("sales.sale", reseller=self.user)
-        url = reverse('sales:sale-accumulated', args=[sale.identifier])
+        url = reverse('sales:sale-accumulated', args=[])
         data = {"cpf": self.user.cpf}
 
         response = self.client.get(url, data=data, format='json')
@@ -135,8 +133,7 @@ class SaleTests(APITestCase):
     def test_get_accumulated_unknown_error(self, m_requests):
         m_requests.get.side_effect = Exception("out")
 
-        sale = baker.make_recipe("sales.sale", reseller=self.user)
-        url = reverse('sales:sale-accumulated', args=[sale.identifier])
+        url = reverse('sales:sale-accumulated')
         data = {"cpf": self.user.cpf}
 
         response = self.client.get(url, data=data, format='json')
