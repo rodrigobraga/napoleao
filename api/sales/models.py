@@ -1,6 +1,8 @@
 import logging
+import re
 import uuid
 
+from django.conf import settings
 from django.core.validators import MinValueValidator
 from django.db import models
 
@@ -71,4 +73,17 @@ class Sale(models.Model):
     
     def __str__(self) -> str:
         return self.code
+    
+    def automatic_approve(self) -> bool:
+        cpf = re.sub(r"\D", "", self.reseller.cpf)
+
+        if cpf not in settings.VIP_RESELLERS:
+            return False
+
+        self.status = Sale.APPROVED
+        self.save(update_fields=["status"])
+
+        logger.info(f"sale {self} was automatically approved")
+
+        return True
 
