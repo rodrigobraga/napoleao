@@ -286,5 +286,9 @@ LOGGING = {
             'handlers': ['default'],
             'level': 'INFO',
         },
+        'sales.tasks': {
+            'handlers': ['default'],
+            'level': 'INFO',
+        },
     }
 }
