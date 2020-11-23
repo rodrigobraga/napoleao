@@ -1,4 +1,5 @@
 import decimal
+from unittest import mock
 
 from django.test import TestCase, override_settings
 
@@ -7,6 +8,7 @@ from model_bakery import baker
 from sales.models import Sale
 
 
+@override_settings(CELERY_TASK_ALWAYS_EAGER=True)
 class SaleTest(TestCase):
 
     def setUp(self):
@@ -14,21 +16,22 @@ class SaleTest(TestCase):
 
     def test_str(self):
         self.assertEqual(self.sale.code, str(self.sale))
-    
+
     @override_settings(VIP_RESELLERS=["35551565432"])
     def test_automatic_approve(self):
         """
         Ensure that all sales made by VIP resellers are automatically approved
         """
         reseller = baker.make_recipe("users.user", cpf="355.515.654-32")
-        sale = baker.make_recipe("sales.sale", reseller=reseller)
-        
+        sale = baker.make_recipe("sales.sale", code="FOO", reseller=reseller)
+
         sale.refresh_from_db()
         
         self.assertEqual(sale.status, Sale.APPROVED)
     
     def test_process_on_change(self):
         """Ensure that when a sale is created, cashback are calculated"""
+
         reseller = baker.make_recipe("users.user")
         baker.make_recipe("sales.sale", reseller=reseller, _quantity=3)
 

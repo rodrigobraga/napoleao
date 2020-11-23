@@ -8,12 +8,12 @@ class SalesConfig(AppConfig):
     def ready(self):
         from .models import Sale
         from .receivers import (
-            approve_on_create,
+            approve_on_create_handler,
             process_on_change_handler,
             process_on_delete_handler
         )
 
-        post_save.connect(approve_on_create, sender=Sale)
+        post_save.connect(approve_on_create_handler, sender=Sale)
         post_save.connect(process_on_change_handler, sender=Sale)
 
         post_delete.connect(process_on_delete_handler, sender=Sale)

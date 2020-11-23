@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 
 @shared_task
-def automatic_approve(sale_id) -> str:
+def automatic_approve(sale_id: int) -> str:
     sale = Sale.objects.get(pk=sale_id)
     sale.automatic_approve()
 
@@ -19,7 +19,7 @@ def automatic_approve(sale_id) -> str:
 
 
 @shared_task
-def process(sale_id) -> str:
+def process(sale_id: int) -> str:
     sale = Sale.objects.get(pk=sale_id)
     sale.process()
 
