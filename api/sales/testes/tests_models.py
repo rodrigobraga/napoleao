@@ -1,3 +1,5 @@
+import decimal
+
 from django.test import TestCase, override_settings
 
 from model_bakery import baker
@@ -24,3 +26,34 @@ class SaleTest(TestCase):
         sale.refresh_from_db()
         
         self.assertEqual(sale.status, Sale.APPROVED)
+    
+    def test_process_on_change(self):
+        """Ensure that when a sale is created, cashback are calculated"""
+        reseller = baker.make_recipe("users.user")
+        baker.make_recipe("sales.sale", reseller=reseller, _quantity=3)
+
+        total = sum(reseller.sales.values_list("cashback", flat=True))
+
+        self.assertEqual(total, decimal.Decimal(420))
+    
+    def test_process_on_delete(self):
+        """Ensure that when a sale is removed, cashback are calculated"""
+        reseller = baker.make_recipe("users.user")
+        sale = baker.make_recipe("sales.sale", reseller=reseller)
+        baker.make_recipe("sales.sale", reseller=reseller, _quantity=2)
+
+        sale.delete()
+
+        total = sum(reseller.sales.values_list("cashback", flat=True))
+
+        self.assertEqual(total, decimal.Decimal(210))
+    
+    def test_process_on_delete_last_sale(self):
+        """Ensure that when the last sale is removed the flow is interrupted"""
+        reseller = baker.make_recipe("users.user")
+        sale = baker.make_recipe("sales.sale", reseller=reseller)
+        sale.delete()
+
+        total = sum(reseller.sales.values_list("cashback", flat=True))
+
+        self.assertEqual(total, decimal.Decimal(0))

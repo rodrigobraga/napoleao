@@ -75,6 +75,7 @@ class Sale(models.Model):
         return self.code
     
     def automatic_approve(self) -> bool:
+        """Trigger to automatically approves sales from VIP resellers"""
         cpf = re.sub(r"\D", "", self.reseller.cpf)
 
         if cpf not in settings.VIP_RESELLERS:
@@ -84,6 +85,47 @@ class Sale(models.Model):
         self.save(update_fields=["status"])
 
         logger.info(f"sale {self} was automatically approved")
+
+        return True
+    
+    def process(self) -> bool:
+        """Calculate cashback based on sum of sales from month"""
+
+        # select all sales from related sale date
+        # ---------------------------------------------------------------------
+        sales = Sale.objects.filter(
+            reseller=self.reseller,
+            date__month=self.date.month,
+            date__year=self.date.year
+        )
+
+        # create a "panorama" from month with total of sales and current level
+        # ---------------------------------------------------------------------
+        resume = sales.aggregate(
+            total=models.Sum("value"),
+            percentage=models.Case(
+                models.When(total__lt=1000, then=Sale.TEN),
+                models.When(total__lt=1500, then=Sale.FIFTEEN),    
+                default=Sale.TWENTY,
+                output_field=models.DecimalField(),
+            ),
+            current_percentage=models.Max("percentage")
+        )
+        pct = resume.get("percentage")
+        current_pct = resume.get("current_percentage")
+        change_level = pct != current_pct
+
+        # if the range is not changed just current sale is evaluated
+        # ---------------------------------------------------------------------
+        if not change_level:
+            sales = sales.filter(id=self.id)
+
+        sales.update(percentage=pct, cashback=(models.F("value") * pct) / 100)
+
+        # send to log a "operation report"
+        # ---------------------------------------------------------------------
+        codes = sales.values("code", "percentage", "cashback")
+        logger.info(f"Cashback is (re) calculated to {codes}")
 
         return True
 
