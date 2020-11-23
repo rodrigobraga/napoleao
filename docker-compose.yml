@@ -1,0 +1,85 @@
+version: "3.8"
+
+x-app: &default-app
+  build:
+    context: .
+    dockerfile: ./docker/django/Dockerfile
+    cache_from:
+      - "napoleao:dev"
+      - "napoleao:latest"
+      - "*"
+  image: "napoleao:dev"
+  restart: "unless-stopped"
+  stop_grace_period: "5s"
+  volumes:
+    - ./api:/usr/src/app
+    - django-static:/var/www/django/static
+    - django-media:/var/www/django/media
+  depends_on:
+    - postgres
+    - redis
+  networks:
+    - napoleao-network
+  env_file:
+    - ./config/.env
+
+services:
+  postgres:
+    image: "postgres:13.0-alpine"
+    container_name: napoleao-postgres-container
+    restart: unless-stopped
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - napoleao-network
+    env_file: ./config/.env
+
+  redis:
+    image: redis:6.0.9-alpine
+    container_name: napoleao-redis-container
+    volumes:
+      - redisdata
+    networks:
+      - napoleao-network
+
+  web:
+    <<: *default-app
+    image: "napoleao:dev"
+    container_name: napoleao-web-container
+    ports:
+      - "8000:8000"
+    environment:
+      COMMAND: development
+    healthcheck:
+      # We use `$$` here because:
+      # one `$` goes to shell,
+      # one `$` goes to `docker-compose.yml` escaping
+      test: |
+        /usr/bin/test $$(
+          /usr/bin/curl
+            --fail http://localhost:8000/swagger/?format=openapi
+            --write-out "%{http_code}"
+            --silent
+            --output /dev/null
+            ) -eq 200
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  worker:
+    <<: *default-app
+    image: "napoleao:dev"
+    container_name: napoleao-worker-container
+    environment:
+        COMMAND: worker
+
+networks:
+  napoleao-network:
+
+volumes:
+  pgdata:
+  redisdata:
+  django-static:
+  django-media:
+  django-locale:
