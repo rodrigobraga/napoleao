@@ -29,4 +29,5 @@ urlpatterns = [
     path("auth/token/verify/", verify.as_view(), name="token_verify"),
 
     path("users/", include("users.urls", namespace="users")),
+    path("sales/", include("sales.urls", namespace="sales")),
 ]
