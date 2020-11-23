@@ -43,6 +43,10 @@ jobs:
 
       - name: Install dependencies
         run: pip install -r requirements.txt
+      
+      - name: codestyle
+        working-directory: ./api
+        run: pycodestyle api users sales --exclude=migrations
 
       - name: test
         env:
