@@ -17,6 +17,9 @@ class SaleViewSet(viewsets.ModelViewSet):
     filterset_fields = ("date", "percentage", "status",)
 
     def get_queryset(self):
+        if getattr(self, "swagger_fake_view", False):  # pragma: no cover
+            return Sale.objects.none()
+
         return Sale.objects.filter(reseller=self.request.user)
 
     @action(detail=False, methods=['get'])
