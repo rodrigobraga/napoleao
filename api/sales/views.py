@@ -1,4 +1,10 @@
-from rest_framework import viewsets
+import requests
+
+from rest_framework import viewsets, status
+from rest_framework.decorators import action
+from rest_framework.response import Response
+
+from django.conf import settings
 
 from .models import Sale
 from .serializers import SaleSerializer
@@ -11,3 +17,28 @@ class SaleViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Sale.objects.filter(reseller=self.request.user)
+    
+    @action(detail=True, methods=['get'])
+    def accumulated(self, request, identifier=None):
+        url = settings.ACCUMULATED_API_BASE_URL
+        token = settings.ACCUMULATED_API_TOKEN
+        headers = { "token": token }
+        params = {
+            "cpf": request.user.cpf
+        }
+
+        try:
+            accumulated = requests.get(url, headers=headers, params=params)
+            accumulated = accumulated.json()
+            status_code = accumulated.get("statusCode")
+            body = accumulated.get("body")
+
+            if not status_code == 200:
+                raise ValueError("an error has occurred")
+
+        except ValueError:
+            return Response(body, status=status.HTTP_400_BAD_REQUEST)
+        except Exception:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(body,  status=status.HTTP_200_OK)

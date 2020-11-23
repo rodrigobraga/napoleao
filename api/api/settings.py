@@ -258,6 +258,8 @@ SIMPLE_JWT = {
 # Resellers marked as VIP
 # ----------------------------------------------------------------------------
 VIP_RESELLERS = env.list("VIP_RESELLERS", default=[])
+ACCUMULATED_API_BASE_URL = env.str("ACCUMULATED_API_BASE_URL")
+ACCUMULATED_API_TOKEN = env.str("ACCUMULATED_API_TOKEN")
 
 
 LOGGING = {
