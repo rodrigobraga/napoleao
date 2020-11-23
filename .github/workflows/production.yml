@@ -50,5 +50,7 @@ jobs:
           DJANGO_SETTINGS_MODULE: api.settings
           DATABASE_DEFAULT_URL: postgres://postgres:postgres@localhost:${{ job.services.postgres.ports[5432] }}/postgres?conn_max_age=0
           CACHES_DEFAULT_URL: dummycache://
+          ACCUMULATED_API_BASE_URL: http://local
+          ACCUMULATED_API_TOKEN: 123
         working-directory: ./api
         run: pytest
