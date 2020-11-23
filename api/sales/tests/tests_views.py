@@ -40,14 +40,14 @@ class SaleTests(APITestCase):
         response = self.client.post(url, payload, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-    
+
     def test_list(self):
         baker.make_recipe("sales.sale", reseller=self.user, _quantity=3)
         url = reverse('sales:sale-list')
         response = self.client.get(url, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-    
+
     def test_get(self):
         sale = baker.make_recipe("sales.sale", reseller=self.user)
         url = reverse('sales:sale-detail', args=[sale.identifier])
@@ -77,7 +77,7 @@ class SaleTests(APITestCase):
         response = self.client.patch(url, payload, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-    
+
     def test_delete(self):
         sale = baker.make_recipe("sales.sale", reseller=self.user)
         url = reverse('sales:sale-detail', args=[sale.identifier])
@@ -106,7 +106,7 @@ class SaleTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json(), {"credit": 4467})
-    
+
     @responses.activate
     def test_get_accumulated_error(self):
         responses.add(
@@ -128,7 +128,7 @@ class SaleTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.json(), {"message": "error"})
-    
+
     @mock.patch("sales.views.requests")
     def test_get_accumulated_unknown_error(self, m_requests):
         m_requests.get.side_effect = Exception("out")

@@ -26,9 +26,9 @@ class SaleTest(TestCase):
         sale = baker.make_recipe("sales.sale", code="FOO", reseller=reseller)
 
         sale.refresh_from_db()
-        
+
         self.assertEqual(sale.status, Sale.APPROVED)
-    
+
     def test_process_on_change(self):
         """Ensure that when a sale is created, cashback are calculated"""
 
@@ -38,7 +38,7 @@ class SaleTest(TestCase):
         total = sum(reseller.sales.values_list("cashback", flat=True))
 
         self.assertEqual(total, decimal.Decimal(420))
-    
+
     def test_process_on_delete(self):
         """Ensure that when a sale is removed, cashback are calculated"""
         reseller = baker.make_recipe("users.user")
@@ -50,7 +50,7 @@ class SaleTest(TestCase):
         total = sum(reseller.sales.values_list("cashback", flat=True))
 
         self.assertEqual(total, decimal.Decimal(210))
-    
+
     def test_process_on_delete_last_sale(self):
         """Ensure that when the last sale is removed the flow is interrupted"""
         reseller = baker.make_recipe("users.user")

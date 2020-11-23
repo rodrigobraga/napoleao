@@ -19,6 +19,7 @@ ipython==7.19.0
 model-bakery==1.2.1
 pip==20.2.4
 psycopg2-binary==2.8.6
+pycodestyle==2.6.0
 pytest==6.1.2
 pytest-cov==2.10.1
 pytest-django==4.1.0

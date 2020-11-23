@@ -18,15 +18,13 @@ class SaleViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Sale.objects.filter(reseller=self.request.user)
-    
+
     @action(detail=False, methods=['get'])
     def accumulated(self, request, identifier=None):
         url = settings.ACCUMULATED_API_BASE_URL
         token = settings.ACCUMULATED_API_TOKEN
-        headers = { "token": token }
-        params = {
-            "cpf": request.user.cpf
-        }
+        headers = {"token": token}
+        params = {"cpf": request.user.cpf}
 
         try:
             accumulated = requests.get(url, headers=headers, params=params)

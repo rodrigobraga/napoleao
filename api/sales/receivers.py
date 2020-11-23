@@ -4,6 +4,7 @@ from .tasks import automatic_approve, process
 
 logger = logging.getLogger(__name__)
 
+
 def approve_on_create_handler(sender, instance, created, **kwargs) -> bool:
     if not created:
         return False
@@ -40,5 +41,5 @@ def process_on_delete_handler(sender, instance, **kwargs) -> bool:
     process.delay(sale_id=sale.id)
 
     logger.info(f"sale {instance} was removed, the remaining are be evaluated")
-    
-    return True 
+
+    return True

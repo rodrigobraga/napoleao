@@ -46,7 +46,7 @@ class Sale(models.Model):
         on_delete=models.CASCADE
     )
     status = models.CharField(
-        max_length=255, 
+        max_length=255,
         choices=STATUS,
         default=IN_VALIDATION
     )
@@ -70,10 +70,10 @@ class Sale(models.Model):
             models.Index(fields=["date"], name="date_idx"),
             models.Index(fields=["status"], name="status_idx"),
         ]
-    
+
     def __str__(self) -> str:
         return self.code
-    
+
     def automatic_approve(self) -> bool:
         """Trigger to automatically approves sales from VIP resellers"""
         cpf = re.sub(r"\D", "", self.reseller.cpf)
@@ -87,7 +87,7 @@ class Sale(models.Model):
         logger.info(f"sale {self} was automatically approved")
 
         return True
-    
+
     def process(self) -> bool:
         """Calculate cashback based on sum of sales from month"""
 
@@ -105,7 +105,7 @@ class Sale(models.Model):
             total=models.Sum("value"),
             percentage=models.Case(
                 models.When(total__lt=1000, then=Sale.TEN),
-                models.When(total__lt=1500, then=Sale.FIFTEEN),    
+                models.When(total__lt=1500, then=Sale.FIFTEEN),
                 default=Sale.TWENTY,
                 output_field=models.DecimalField(),
             ),
@@ -128,4 +128,3 @@ class Sale(models.Model):
         logger.info(f"Cashback is (re) calculated to {codes}")
 
         return True
-

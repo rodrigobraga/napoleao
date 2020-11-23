@@ -22,10 +22,10 @@ class AuthTests(APITestCase):
         response = self.client.post(url, payload, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-    
+
     def test_token_refresh(self):
         url = reverse('token_refresh')
-        
+
         refresh = RefreshToken.for_user(self.user)
 
         payload = {
@@ -35,10 +35,10 @@ class AuthTests(APITestCase):
         response = self.client.post(url, payload, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-    
+
     def test_token_verify(self):
         url = reverse('token_verify')
-        
+
         token = RefreshToken.for_user(self.user)
 
         payload = {
@@ -73,7 +73,7 @@ class UserTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.json(), payload)
-    
+
     def test_update(self):
         url = reverse('users:user-detail', args=[self.user.username])
         payload = {

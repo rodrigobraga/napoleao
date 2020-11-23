@@ -4,7 +4,7 @@ from django.db.models.signals import post_save, post_delete
 
 class SalesConfig(AppConfig):
     name = 'sales'
-    
+
     def ready(self):
         from .models import Sale
         from .receivers import (

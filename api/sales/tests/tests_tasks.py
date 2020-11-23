@@ -27,4 +27,3 @@ class ProcessTest(TestCase):
         process(sale_id=sale.id)
 
         sale.process.assert_called_once()
-
