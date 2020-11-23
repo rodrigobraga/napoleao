@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, re_path, include
 
 from rest_framework_simplejwt.views import TokenObtainPairView as obtain
 from rest_framework_simplejwt.views import TokenRefreshView as refresh
@@ -48,8 +48,8 @@ urlpatterns = [
     path("users/", include("users.urls", namespace="users")),
     path("sales/", include("sales.urls", namespace="sales")),
 
-    path(
-        r'swagger(?P<format>\.json|\.yaml)',
+    re_path(
+        'swagger(?P<format>\.json|\.yaml)',
         schema_view.without_ui(cache_timeout=0),
         name='schema-json'
     ),
