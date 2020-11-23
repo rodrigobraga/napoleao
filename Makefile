@@ -30,6 +30,9 @@ dependencies:
 test:
 	docker-compose run --rm web pytest -s -n auto
 
+codestyle:
+	docker-compose run --rm --no-deps web pycodestyle api users sales --exclude=migrations
+
 makemessages:
 	docker-compose run --rm --no-deps web python manage.py makemessages -l pt_BR
 	docker-compose run --rm --no-deps web python manage.py compilemessages -l pt_BR
